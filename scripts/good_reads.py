@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import sys
+from media_extractor import MediaLocator
 
 
 def get_book_genres(book_title, author_name):
@@ -46,7 +47,7 @@ def lookup_title_author(book_title, author_name):
     print(f"{book_title} by {author_name}: {result}")
     return result
 
-def get_books(batch_size=1000):
+def get_book_genres(batch_size=1000):
 
     file_path = "D:/OneDrive/Books/five star books.csv"
     df = pd.read_csv(file_path, encoding='utf-8')
@@ -61,8 +62,18 @@ def get_books(batch_size=1000):
             counter += 1
             if counter % 10 == 0:
                 print(f"{counter} out of {batch_size} books processed.")
+def get_selected_books(col_name, col_value):
+    """Get the list of books that match the specified column value."""
+    file_path = "D:/OneDrive/Books/five star books.csv"
+    df = pd.read_csv(file_path, encoding='utf-8')
+    return df[df[col_name] == col_value]
 def main():
-    get_books()
+
+    media_locator = MediaLocator(r"\\MYCLOUDEX2ULTRA\Public\Books\5Start list\MOBI",r"\\MYCLOUDEX2ULTRA\Public\Books\pending transfer\Ben")
+    books = get_selected_books("Ben", "Y")
+
+    for i in range(len(books)):
+        media = media_locator.get_media(books.iloc[i, 0],books.iloc[i, 1])
 
 
 if __name__ == "__main__":
