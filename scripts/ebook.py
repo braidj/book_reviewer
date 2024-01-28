@@ -1,5 +1,5 @@
 import os
-
+import shutil
 import pandas as pd
 
 
@@ -17,22 +17,49 @@ class Ebooks():
     def check_book(self, author: str, title: str, display: bool = False):
         """Checks if the specified book exists in the source folder."""
 
+        if ":" in title:
+            title = title.replace(":", "_")
+
         if title.startswith("The "):
             title = title[4:] + ", The"
+
+        if title.startswith("A "):
+            title = title[2:] + ", A"
 
         title_folder = os.path.join(self.source_folder, author, title)
         result = os.path.exists(title_folder)
 
+        if result:
+            mobi_file = self.find_file_in_folder(title_folder, '.mobi')
+            jpg_file = self.find_file_in_folder(title_folder, '.jpg')
+            self.transfer_book(title_folder,mobi_file)
+            self.transfer_book(title_folder,jpg_file)
+
         if display:
             if result:
                 print(f"Found {title_folder}")
-                print(os.path.basename(self.find_file_in_folder(title_folder, '.mobi')))
-                print(os.path.basename(self.find_file_in_folder(title_folder, '.jpg')))
-
             else:
                 print(f"Could not find {title_folder}")
 
         return result
+
+    def transfer_book(self, source_folder: str, item: str):
+        """Transfer the book files to the transfer folder."""
+
+        try:
+
+            file_name = os.path.basename(item)
+
+            # Construct the full destination path
+            full_source = os.path.join(source_folder, item)
+            destination_path = os.path.join(self.transfer_folder, file_name)
+            print(f"Copying {full_source} to {destination_path}")
+
+            # Copy the file
+            shutil.copy2(full_source, destination_path)
+
+        except Exception as e:
+            print(f"Error occurred: {e}")
 
     def batch_check_book(self, data: object):
         """Checks if the specified book exists in the source folder."""
@@ -95,9 +122,10 @@ def main():
                      'Ben=Y')  # noqa: E501
     # data.properties()
 
-    ebooks = Ebooks(r"\\MYCLOUDEX2ULTRA\Public\Books\5Start list\MOBI", r"D:\OneDrive\Books\five star books.csv")
+    ebooks = Ebooks(r"\\MYCLOUDEX2ULTRA\Public\Books\5Start list\MOBI", r"D:\OneDrive\Books\pending transfer\ben")
     # ebooks.properties()
     ebooks.batch_check_book(data)
+
 
 if __name__ == "__main__":
     main()

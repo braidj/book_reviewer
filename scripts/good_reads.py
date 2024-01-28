@@ -68,12 +68,14 @@ def get_selected_books(col_name, col_value):
     df = pd.read_csv(file_path, encoding='utf-8')
     return df[df[col_name] == col_value]
 def main():
-
+    # Read the list the books to process and move to the transfer folder
     media_locator = MediaLocator(r"\\MYCLOUDEX2ULTRA\Public\Books\5Start list\MOBI",r"\\MYCLOUDEX2ULTRA\Public\Books\pending transfer\Ben")
     books = get_selected_books("Ben", "Y")
 
-    for i in range(len(books)):
-        media = media_locator.get_media(books.iloc[i, 0],books.iloc[i, 1])
+    print(books)
+
+    # for i in range(len(books)):
+    #     media = media_locator.get_media(books.iloc[i, 0],books.iloc[i, 1])
 
 
 if __name__ == "__main__":
